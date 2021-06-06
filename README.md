@@ -80,6 +80,23 @@ function component(width, height, color, x, y, type) {
     }
 }
 
+    document.onkeydown = function(e) {
+            switch (e.keyCode) {
+                case 37:
+                moveleft()
+                    break;
+                case 38:
+                moveup()
+                    break;
+                case 39:
+                moveright();
+                    break;
+                case 40:
+                 movedown();
+                    break;
+            }
+        }
+
 function updateGameArea() {
     var x, height, gap, minHeight, maxHeight, minGap, maxGap;
     for (i = 0; i < myObstacles.length; i += 1) {
