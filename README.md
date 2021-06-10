@@ -15,10 +15,13 @@ canvas {
 var myGamePiece;
 var myObstacles = [];
 var myScore;
+var myMusic;
 
 function startGame() {
     myGamePiece = new component(30, 30, "red", 10, 120);
     myScore = new component("30px", "Consolas", "black", 280, 40, "text");
+    myMusic = new sound("song1.mp3");
+    myMusic.play();
     myGameArea.start();
 }
 
@@ -101,6 +104,7 @@ function updateGameArea() {
     var x, height, gap, minHeight, maxHeight, minGap, maxGap;
     for (i = 0; i < myObstacles.length; i += 1) {
         if (myGamePiece.crashWith(myObstacles[i])) {
+            myMusic.stop();
             myGameArea.stop();
             return;
         }
@@ -127,6 +131,20 @@ function updateGameArea() {
     myScore.update();
     myGamePiece.newPos();
     myGamePiece.update();
+}
+function sound(src) {
+    this.sound = document.createElement("audio");
+    this.sound.src = src;
+    this.sound.setAttribute("preload", "auto");
+    this.sound.setAttribute("controls", "none");
+    this.sound.style.display = "none";
+    document.body.appendChild(this.sound);
+    this.play = function(){
+        this.sound.play();
+    }
+    this.stop = function(){
+        this.sound.pause();
+    }
 }
 
 function everyinterval(n) {
@@ -165,4 +183,3 @@ function clearmove() {
 <p>The score will count one point for each frame you manage to "stay alive".</p>
 </body>
 </html>
-
