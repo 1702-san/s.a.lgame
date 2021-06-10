@@ -5,7 +5,7 @@
 <style>
 canvas {
     border:1px solid #d3d3d3;
-    background-color: pink;
+    background-color: #f1f1f1;
 }
 </style>
 </head>
@@ -14,13 +14,13 @@ canvas {
 
 var myGamePiece;
 var myObstacles = [];
-var myScore;
+var mySound;
 var myMusic;
 
 function startGame() {
     myGamePiece = new component(30, 30, "red", 10, 120);
-    myScore = new component("30px", "Consolas", "black", 280, 40, "text");
-    myMusic = new sound("song1.mp3");
+    mySound = new sound("song1.mp3");
+    myMusic = new sound("song2.mp3");
     myMusic.play();
     myGameArea.start();
 }
@@ -34,17 +34,16 @@ var myGameArea = {
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0;
         this.interval = setInterval(updateGameArea, 20);
-        },
-    clear : function() {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     },
     stop : function() {
         clearInterval(this.interval);
+    },
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 }
 
-function component(width, height, color, x, y, type) {
-    this.type = type;
+function component(width, height, color, x, y) {
     this.width = width;
     this.height = height;
     this.speedX = 0;
@@ -53,14 +52,8 @@ function component(width, height, color, x, y, type) {
     this.y = y;
     this.update = function() {
         ctx = myGameArea.context;
-        if (this.type == "text") {
-            ctx.font = this.width + " " + this.height;
-            ctx.fillStyle = color;
-            ctx.fillText(this.text, this.x, this.y);
-        } else {
-            ctx.fillStyle = color;
-            ctx.fillRect(this.x, this.y, this.width, this.height);
-        }
+        ctx.fillStyle = color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
     }
     this.newPos = function() {
         this.x += this.speedX;
@@ -83,28 +76,30 @@ function component(width, height, color, x, y, type) {
     }
 }
 
-    document.onkeydown = function(e) {
-            switch (e.keyCode) {
-                case 37:
-                moveleft()
-                    break;
-                case 38:
-                moveup()
-                    break;
-                case 39:
-                moveright();
-                    break;
-                case 40:
-                 movedown();
-                    break;
-            }
+document.onkeydown = function(e) {
+        switch (e.keyCode) {
+            case 37:
+            moveleft()
+                break;
+            case 38:
+            moveup()
+                break;
+            case 39:
+            moveright();
+                break;
+            case 40:
+             movedown();
+                break;
         }
+    }
 
 function updateGameArea() {
     var x, height, gap, minHeight, maxHeight, minGap, maxGap;
+      mySound.play();
     for (i = 0; i < myObstacles.length; i += 1) {
         if (myGamePiece.crashWith(myObstacles[i])) {
-            myMusic.stop();
+
+            mySound.stop();
             myGameArea.stop();
             return;
         }
@@ -123,15 +118,13 @@ function updateGameArea() {
         myObstacles.push(new component(10, x - height - gap, "green", x, height + gap));
     }
     for (i = 0; i < myObstacles.length; i += 1) {
-        myObstacles[i].speedX = -1;
-        myObstacles[i].newPos();
+        myObstacles[i].x -= 1;
         myObstacles[i].update();
     }
-    myScore.text="SCORE: " + myGameArea.frameNo;
-    myScore.update();
     myGamePiece.newPos();
     myGamePiece.update();
 }
+
 function sound(src) {
     this.sound = document.createElement("audio");
     this.sound.src = src;
@@ -162,7 +155,7 @@ function movedown() {
 
 function moveleft() {
     myGamePiece.speedX = -1;
-}C
+}
 
 function moveright() {
     myGamePiece.speedX = 1;
@@ -179,7 +172,5 @@ function clearmove() {
   <button onmousedown="moveright()" onmouseup="clearmove()" ontouchstart="moveright()">RIGHT</button><br><br>
   <button onmousedown="movedown()" onmouseup="clearmove()" ontouchstart="movedown()">DOWN</button>
 </div>
-
-<p>The score will count one point for each frame you manage to "stay alive".</p>
 </body>
 </html>
